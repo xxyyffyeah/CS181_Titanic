@@ -34,7 +34,9 @@ features = ["Pclass", "Sex", "SibSp", "Parch"]
 X = pd.get_dummies(train_data[features])
 X_test = pd.get_dummies(test_data[features])
 
-model = RandomForestClassifier(n_estimators=100, max_depth=5, random_state=1)
+#model = RandomForestClassifier(n_estimators=100, max_depth=5, random_state=1)
+from sklearn.linear_model import LogisticRegression
+model = LogisticRegression()
 model.fit(X, y)
 predictions = model.predict(X_test)
 
