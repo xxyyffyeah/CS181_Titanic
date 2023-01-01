@@ -145,19 +145,35 @@ groundTruth=np.array(ytrain)
 modelInput=np.array(xtrain)
 ltestModel=Logistics_helpler.LogisticsModel(groundTruth,modelInput)
 ltestModel.Train()
-modelInput_test=np.array(test)
-modelOutput_test=ltestModel.RunModel(modelInput_test)
-modelOutput_test=modelOutput_test.reshape(modelOutput_test.shape[0])
-
-for i in range(modelOutput_test.shape[0]):
-    if modelOutput_test[i]>=0.5:
-        modelOutput_test[i]=1
+modelInput_val=np.array(xval)
+modelOutput_val=ltestModel.RunModel(modelInput_val)
+modelOutput_val=modelOutput_val.reshape(modelOutput_val.shape[0])
+correctnum=0
+for i in range(modelOutput_val.shape[0]):
+    if modelOutput_val[i]>=0.5:
+        modelOutput_val[i]=1
     else:
-        modelOutput_test[i]=0
+        modelOutput_val[i]=0
+valGround=np.array(yval)
+for i in range(valGround.shape[0]):
+    if modelOutput_val[i]==valGround[i]:
+        correctnum+=1
+print(correctnum/valGround.shape[0])
 
-idList=[]
-for i in range(modelOutput_test.shape[0]):
-    idList.append(892+i)
-
-submission=pd.DataFrame({"PassengerId":idList,"Survived":modelOutput_test})
-submission.to_csv("test_submit.csv",index=False)
+#
+# modelInput_test=np.array(test)
+# modelOutput_test=ltestModel.RunModel(modelInput_test)
+# modelOutput_test=modelOutput_test.reshape(modelOutput_test.shape[0])
+#
+# for i in range(modelOutput_test.shape[0]):
+#     if modelOutput_test[i]>=0.5:
+#         modelOutput_test[i]=1
+#     else:
+#         modelOutput_test[i]=0
+#
+# idList=[]
+# for i in range(modelOutput_test.shape[0]):
+#     idList.append(892+i)
+#
+# submission=pd.DataFrame({"PassengerId":idList,"Survived":modelOutput_test})
+# submission.to_csv("test_submit.csv",index=False)
