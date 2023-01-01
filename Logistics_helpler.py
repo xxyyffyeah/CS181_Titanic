@@ -13,7 +13,6 @@ class LogisticsModel:
     def Sigmoid(self,_z):
         return 1/(1+np.exp(-_z))
     def RunModel(self,_bacthdata):
-        # ?sum dimention
         h=np.dot(_bacthdata,self.w)
         z=self.Sigmoid(h)
         return z
@@ -24,8 +23,9 @@ class LogisticsModel:
         return loss
     def GradientDecent(self,_ground,_batchdata):
         num=_batchdata.shape[0]
-        h =np.dot(_batchdata,self.w)
-        dw=(1.0/num)*np.dot(_batchdata.T,(h-_ground))
+        # h =np.dot(_batchdata,self.w)
+        z=self.RunModel(_batchdata)
+        dw=(1.0/num)*np.dot(_batchdata.T,(z-_ground))
         self.w=self.w-dw*self.learningRate
     def Train(self):
         for i in range(self.itertimes):

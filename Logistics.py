@@ -145,6 +145,7 @@ groundTruth=np.array(ytrain)
 modelInput=np.array(xtrain)
 ltestModel=Logistics_helpler.LogisticsModel(groundTruth,modelInput)
 ltestModel.Train()
+
 modelInput_val=np.array(xval)
 modelOutput_val=ltestModel.RunModel(modelInput_val)
 modelOutput_val=modelOutput_val.reshape(modelOutput_val.shape[0])
