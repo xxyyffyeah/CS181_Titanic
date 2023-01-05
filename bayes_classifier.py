@@ -110,15 +110,25 @@ if __name__ == "__main__":
 	data = data.iloc[:782,]
 	X = data.drop(columns='Survived')
 	y = data.Survived
+	
+	split = int(X.shape[0]*0.2)
+	valX = X.iloc[:split,]
+	trainX = X.iloc[split:,]
+	valy = y.iloc[:split,]
+	trainy = y.iloc[split:,]
 	nb_clf = NaiveBayes()
-	nb_clf.fit(X, y)
-	print("Train Accuracy:", accuracy_score(y, nb_clf.predict(X)))
+	nb_clf.fit(trainX, trainy)
+
+	print("Train Accuracy:", accuracy_score(trainy, nb_clf.predict(trainX)))
+	print("Validation Accuracy:", accuracy_score(valy, nb_clf.predict(valX)))
 
 	# Test Submission
 	test = dt_cpy.iloc[782:,1:]
 
-	#detour -- rehash
+	# detour -- rehash
 	test.Parch = test.Parch.replace({9:6})
+
+	# submission
 	pred = nb_clf.predict(test)
 	sub_df = pd.DataFrame(columns=["PassengerId", "Survived"])
 	idx = pd.array(data=[i+782 for i in range(test.shape[0])])
