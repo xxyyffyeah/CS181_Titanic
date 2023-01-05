@@ -104,9 +104,25 @@ class NaiveBayes:
 if __name__ == "__main__":
 	data = pd.read_csv("bayes/vectored_data.csv")
 	data = data.iloc[:,1:]
+	dt_cpy = data.copy()
+	
+	# Training
 	data = data.iloc[:782,]
 	X = data.drop(columns='Survived')
 	y = data.Survived
 	nb_clf = NaiveBayes()
 	nb_clf.fit(X, y)
 	print("Train Accuracy:", accuracy_score(y, nb_clf.predict(X)))
+
+	# Test Submission
+	test = dt_cpy.iloc[782:,1:]
+
+	#detour -- rehash
+	test.Parch = test.Parch.replace({9:6})
+	pred = nb_clf.predict(test)
+	sub_df = pd.DataFrame(columns=["PassengerId", "Survived"])
+	idx = pd.array(data=[i+782 for i in range(test.shape[0])])
+	sub_df["PassengerId"] = idx
+	sub_df["Survived"] = pred
+	sub_df.to_csv("test_submission.csv")
+		
