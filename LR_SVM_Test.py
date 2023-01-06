@@ -3,6 +3,7 @@ warnings.filterwarnings('ignore')
 import numpy as np
 import pandas as pd
 import Logistics_helpler
+import SVM_helpler
 #%%
 train=pd.read_csv('train.csv')
 test=pd.read_csv('test.csv')
@@ -129,39 +130,62 @@ xtrain,xval,ytrain,yval=train_test_split(x,y,test_size=0.2,random_state=50,shuff
 
 xtrain.shape,ytrain.shape,xval.shape,yval.shape
 
-from sklearn.linear_model import LogisticRegression
+# from sklearn.linear_model import LogisticRegression
+#
+# model=LogisticRegression()
+# lr=model.fit(xtrain,ytrain)
+# lr.coef_=np.ones((1,43))
+# from sklearn.model_selection import cross_val_score
+# train_score=cross_val_score(lr,xtrain,ytrain,scoring='accuracy',cv=10).mean()
+# val_score=cross_val_score(lr,xval,yval,scoring='accuracy',cv=10).mean()
+#
+# print('train score:',train_score,'validation score:',val_score)
+#
 
-model=LogisticRegression()
-lr=model.fit(xtrain,ytrain)
-lr.coef_=np.ones((1,43))
-from sklearn.model_selection import cross_val_score
-train_score=cross_val_score(lr,xtrain,ytrain,scoring='accuracy',cv=10).mean()
-val_score=cross_val_score(lr,xval,yval,scoring='accuracy',cv=10).mean()
 
-print('train score:',train_score,'validation score:',val_score)
-
-# train_numpy=np.array(train)
 groundTruth=np.array(ytrain)
 modelInput=np.array(xtrain)
+valGround=np.array(yval)
+modelInput_val=np.array(xval)
+
+
+# LR
+correctnum=0
 ltestModel=Logistics_helpler.LogisticsModel(groundTruth,modelInput)
 ltestModel.Train()
-
-modelInput_val=np.array(xval)
 modelOutput_val=ltestModel.RunModel(modelInput_val)
 modelOutput_val=modelOutput_val.reshape(modelOutput_val.shape[0])
-correctnum=0
 for i in range(modelOutput_val.shape[0]):
     if modelOutput_val[i]>=0.5:
         modelOutput_val[i]=1
     else:
         modelOutput_val[i]=0
-valGround=np.array(yval)
+
 for i in range(valGround.shape[0]):
     if modelOutput_val[i]==valGround[i]:
         correctnum+=1
-print(correctnum/valGround.shape[0])
+print("Logic Regression:"+str(correctnum/valGround.shape[0]))
 
-#
+
+for y in range(groundTruth.shape[0]):
+    if groundTruth[y]==0:
+        groundTruth[y]=-1
+SVMtest_model=SVM_helpler.SVMModel(groundTruth, modelInput,_C=0.5,_toler=0.0001,_maxIterTime= 40,_delta= 0.6)
+SVMtest_model.SMO()
+w = SVMtest_model.w
+b = SVMtest_model.b
+correctnum=0
+for x in range(modelInput_val.shape[0]):
+    y=np.dot(modelInput_val[x],w)+b
+    if(y[0]<0 and valGround[x]==0):
+        correctnum+=1
+    if(y[0]>0 and valGround[x]==1):
+        correctnum += 1
+print("SVM:" +str(correctnum/valGround.shape[0]))
+
+
+
+
 # modelInput_test=np.array(test)
 # modelOutput_test=ltestModel.RunModel(modelInput_test)
 # modelOutput_test=modelOutput_test.reshape(modelOutput_test.shape[0])

@@ -33,7 +33,7 @@ class LogisticsModel:
             predict=self.RunModel(batchData)
             self.GradientDecent(self.groundTruth,batchData)
             loss=self.LossFunction(self.groundTruth,predict)
-            print(loss)
+            # print(loss)
 
 
 
